@@ -20,7 +20,14 @@ body {
 	font-family: 'Noto Sans', sans-serif;
 	/* font-family: 'PT Sans', sans-serif; */
 	background-color: #f5f5f5 !important;
+	margin-bottom: 60px;
 }
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+
 .thumbnail img {
 	width: 100%;
 }
@@ -155,4 +162,12 @@ body {
 .was-validated .form-control:valid,
 .was-validated .form-control:invalid {
 	background-image: none;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	line-height: 60px;
+	background: transparent;
 }
