@@ -1,0 +1,211 @@
+<%- include('../partials/header'); -%>
+
+<div class="mt-3 container">
+    <div class="row">
+        <div class="col-md-3 d-none d-md-block">
+            <p class="lead text-center"><%= camp.name %></p>
+            <div class="list-group mb-3">
+                <li class="list-group-item bg-light"><i class="far fa-calendar-alt"></i> Booking Window</li>
+                <li class="list-group-item"><%= camp.booking.start %> - <%= camp.booking.end %></li>
+            </div>
+            <div class="list-group mb-3">
+                <li class="list-group-item bg-light"><i class="far fa-smile"></i> Amenities</li>
+                <% camp.tags.forEach((tag) => { %>
+                    <li class="list-group-item text-capitalize"><%= tag %></li>
+                <% }) %>
+            </div>
+            <div class="list-group mb-3">
+                <li class="list-group-item bg-light"><i class="fas fa-phone"></i> Contact</li>
+                <li class="list-group-item">+91 <%= camp.phone %></li>
+            </div>
+            <div class="list-group">
+                <li class="list-group-item bg-light"><i class="fas fa-map-marker-alt"></i> Location</li>
+                <li class="list-group-item"><%= camp.location %></li>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <img class="card-img-top" src="<%= camp.image %>">  
+                <div class="card-body">
+                    <h5 class="card-title mb-0 float-right text-capitalize">$<%= camp.price %>/night</h5>
+                    <a href=""><h5 class="card-title mb-0 text-capitalize"><%= camp.name %></h5></a>
+                    <div class="mb-2">
+                        <span>
+                            <% for(let i=0;i<5;i++) { %>
+                                <% if(i < parseInt(camp.rateAvg)) { %>
+                                    <i class="fas fa-star"></i>
+                                <% } else{ %>
+                                    <i class="far fa-star"></i>
+                                <% } %>
+                            <% } %>
+                        </span>
+                        <span class="text-muted"><%= camp.rateCount ? camp.rateCount : 0 %> <%= camp.comments.length === 1 ? "review" : "reviews" %></span>
+                    </div>
+                    <p class="card-text"><%= camp.description %></p>
+                    <hr>
+                    <div class="d-block d-md-none">
+                        <h5 class="card-title"><i class="fas fa-map-marker-alt"></i> Location</h5>
+                        <%= camp.location %>
+                        <hr>
+                        <h5 class="card-title"><i class="far fa-calendar-alt"></i> Booking Window</h5>
+                        <%= camp.booking.start %> - <%= camp.booking.end %>
+                        <hr>
+                        <h5 class="card-title"><i class="far fa-smile"></i> Amenities</h5>
+                        <% camp.tags.forEach((tag) => { %>
+                            <span class="badge badge-secondary text-capitalize"><%= tag %></span>
+                        <% }) %>
+                        <hr>
+                        <h5 class="card-title"><i class="fas fa-phone"></i> Contact</h5>
+                        +91 <%= camp.phone %>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="pt-1 col-lg-9 col-md-8 col-sm-8 col-7 card-text text-muted">Submitted by <a href="#"><%= camp.author.username %></a> on <%= moment(camp.createdAt).format('MMMM Do YYYY') %></div>
+                        <div class="col-lg-3 col-md-4 col-sm-4 col-5">
+                            <% if(currUser && camp.author.id.equals(currUser._id)) { %>
+                                <a title="Edit" href="/components/<%= camp._id %>/edit" class="btn btn-md btn-link"><i class="fas fa-pencil-alt"></i></a>
+                                <form class="delete-camp" action="/components/<%= camp._id %>?_method=DELETE" method="POST">
+                                    <button title="Delete" class="btn btn-md btn-link"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="list-group mt-3">
+                <li class="bg-light list-group-item text-right">
+                    <a id="custom-button" class="btn btn-secondary" data-toggle="collapse" href="#comment-form" role="button" aria-expanded="false" aria-controls="comment-form">Leave a review</a>
+                </li>
+                <li class="list-group-item collapse" id="comment-form">
+                    <div>
+                        <form action="/components/<%= camp._id %>/comments" method="POST">
+                            <div class="form-group">
+                                <label for="new-comment">Comment</label>
+                                <textarea class="form-control" id="new-comment" rows="5" name="comment[comment]"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Rating</label>
+                                <div class="stars">
+                                    <i class="star1 big-star far fa-star"></i>
+                                    <i class="star1 big-star far fa-star"></i>
+                                    <i class="star1 big-star far fa-star"></i>
+                                    <i class="star1 big-star far fa-star"></i>
+                                    <i class="star1 big-star far fa-star"></i>
+                                </div>
+                                <input class="rating" name="comment[rating]" type="number" value="0" hidden>
+                            </div>    
+                            <button id="custom-button" class="btn btn-md btn-primary">Submit</button>
+                        </form>
+                    </div> 
+                </li>
+                    <% camp.comments.forEach(function(newComment){ %>
+                        <li class="pb-0 list-group-item">
+                            <p class="mb-0 mt-0">
+                                <i class="fas fa-user mr-1"></i> <a href="#"><%= newComment.author.username %></a>
+                                <span class="float-right">
+                                    <% for(let i=0;i<5;i++) { %>
+                                        <% if(i < newComment.rating) { %>
+                                            <i class="fas fa-star"></i>
+                                        <% } else{ %>
+                                            <i class="far fa-star"></i>
+                                        <% } %>
+                                    <% } %>
+                                    <span><small><%= moment(newComment.createdAt).fromNow() %></small></span>    
+                                </span>
+                            </p>
+                            <div class="text-muted mt-3 mb-2">
+                                <div><%= newComment.comment %></div>
+                                <% if(currUser && newComment.author.id.equals(currUser._id)) { %>
+                                    <div class="float-right">
+                                        <a class="btn btn-sm btn-link" data-toggle="collapse" href="#comment-edit" role="button" aria-expanded="false" aria-controls="comment-edit">
+                                        <i class="fas fa-pencil-alt"></i></a>
+                                        
+                                        <form class="delete-camp" action="/components/<%= camp._id %>/comments/<%= newComment._id %>?_method=DELETE" method="POST">
+                                            <button class="btn btn-sm btn-link"><i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                        
+                                    </div>
+                                    <div class="mt-4 text-dark collapse" id="comment-edit">
+                                        <form action="/components/<%= camp._id %>/comments/<%= newComment._id %>?_method=PUT" method="POST">
+                                            <div class="form-group">
+                                                <label for="new-comment">Edit Comment</label>
+                                                <textarea class="form-control" id="new-comment" rows="5" name="comment[comment]"><%= newComment.comment %></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Rating</label>
+                                                <div class="stars1">
+                                                    <i class="star2 big-star far fa-star"></i>
+                                                    <i class="star2 big-star far fa-star"></i>
+                                                    <i class="star2 big-star far fa-star"></i>
+                                                    <i class="star2 big-star far fa-star"></i>
+                                                    <i class="star2 big-star far fa-star"></i>
+                                                </div>
+                                                <input class="rating1" name="comment[rating]" type="number" value="0" hidden>
+                                            </div>    
+                                            <button id="custom-button" class="btn btn-md btn-primary">Submit</button>
+                                        </form>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            
+                        </li>
+                    <% }) %>
+                    </ul>
+        </div>
+    </div>    
+</div>
+
+<h3></h3>
+
+<script>
+    const starRating = (c1, c2, c3) => {
+        const star = document.querySelectorAll(c1);
+        const rating = document.querySelector(c2);
+        const stars = document.querySelector(c3)
+        let flag = 0;
+        for (let i = 0; i < star.length; i++) {
+            star[i].addEventListener('mouseover', function() {
+            flag = 0;
+            rating.value = 0;
+                for (let j = 0; j <= i; j++) {
+                    star[j].classList.remove('far');
+                    star[j].classList.add('fas');
+                }
+            });
+        }
+
+        for (let i = 0; i < star.length; i++) {
+            star[i].addEventListener('click', function() {
+            flag = 1;
+                for (let j = 0; j <= i; j++) {
+                    star[j].classList.remove('far');
+                    star[j].classList.add('fas');
+                }
+            for (let k = i+1; k < star.length; k++) {
+                    star[k].classList.remove('fas');
+                    star[k].classList.add('far');
+                }
+            rating.value = i+1;
+            });
+        }
+
+        stars.addEventListener('mouseout', function() {
+            if(flag === 0) {
+            for (let i = 0; i < star.length; i++) {
+                star[i].classList.remove('fas');
+                star[i].classList.add('far');
+            }
+        }
+        });
+    }
+    starRating('.star1', '.rating', '.stars');
+    starRating('.star2', '.rating1', '.stars1');
+    
+</script>
+
+
+
+
+<%- include('../partials/footer'); -%>

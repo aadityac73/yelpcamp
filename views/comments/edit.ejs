@@ -1,0 +1,22 @@
+<%- include('../partials/header'); -%>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+            <div class="card shadow-lg rounded-0 border-0">
+                <div class="card-body">
+                    <h3 class="card-title text-center">Edit Comment</h3>
+                    <form class="needs-validation" action="/components/<%= camp._id %>/comments/<%= comment._id %>?_method=PUT" method="post" novalidate>
+                        <div class="form-group">
+                            <label for="new-comment">Comment</label>
+                            <textarea class="form-control" name="comment[comment]" id="new-comment" rows="5" required><%= comment.comment %></textarea>
+                        </div>
+                            <button id="custom-button" class="btn btn-md btn-primary btn-block">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer'); -%>
