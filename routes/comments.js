@@ -31,7 +31,7 @@ router.post('/', middleware.isLoggedIn, async (req, res) => {
 		if (rated.includes(String(req.user._id))) {
 			req.flash(
 				'error',
-				"You've already reviewd this campgronud, please edit this campground instead."
+				"You've already reviewd this campgronud, please edit your review instead."
 			);
 			return res.redirect('back');
 		}
