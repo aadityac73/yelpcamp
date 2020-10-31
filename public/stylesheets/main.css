@@ -141,6 +141,7 @@ html {
 	background-color: var(--var-primary-color);
 	border: 1px solid var(--var-primary-color);
 	transition: all 0.3s ease-in-out;
+	color: #fff;
 }
 
 #custom-button:hover {

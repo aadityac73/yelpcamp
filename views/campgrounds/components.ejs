@@ -6,29 +6,89 @@
         <p id="quote">View our hand-picked campgrounds from all over the world!</p>
     </div>
 </div>
+<nav class="navbar navbar-expand navbar-light bg-light shadow">
+    <div class="container">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Sort By
+                      </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <form class="sortForm" action="/components" method="GET">
+                            <input type="text" name="sortby" value="rateAvg" class="d-none">
+                            <button type="submit" class="dropdown-item">Highest Rated</button>
+                        </form>
+                        <form class="sortForm" action="/components" method="GET">
+                            <input type="text" name="sortby" value="rateCount" class="d-none">
+                            <button type="submit" class="dropdown-item">Most Reviewed</button>
+                        </form>
+                        <form class="sortForm" action="/components" method="GET">
+                            <input type="text" name="sortby" value="priceLow" class="d-none">
+                            <button type="submit" class="dropdown-item">Lowest Price</button>
+                        </form>
+                        <form class="sortForm" action="/components" method="GET">
+                            <input type="text" name="sortby" value="priceHigh" class="d-none">
+                            <button type="submit" class="dropdown-item">Highest Price</button>
+                        </form>
+                        <a href="/components" href class="dropdown-item">Reset</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="d-none d-md-block">
+                <form class="input-group ml-auto" action="/components" method="GET">
+                    <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search">
+                    <div class="input-group-append">
+                        <button type="submit" id="custom-button" class="btn btn-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container mt-3 mb-1">
+    <div class="d-block d-md-none">
+        <form class="input-group ml-auto" action="/components" method="GET">
+            <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+                <button type="submit" id="custom-button" class="btn btn-secondary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <div class="components py-4 container">
         <div class="row">
-            <% camps.forEach(function(camp){ %>
-                <div class="col-12 col-sm-6 col-md-4">
-                    <div class="card indexCards mb-4 shadow">
-                        <a href="/components/<%= camp["_id"] %>"><img class="bd-placeholder-img card-img-top" src="<%= camp["image"] %>" alt=""></a>
-                        <div class="card-body">
-                            <p class="mb-0"><a href="/components/<%= camp["_id"] %>"><%= camp.name %></a><span id="camp-price-icon" class="text-muted float-right"><%= camp.price <= 10 ? "$" : "$$" %></span></p>
-                            <span>
-                                <% for(let i=0;i<5;i++) { %>
-                                    <% if(i < parseInt(camp.rateAvg)) { %>
-                                        <i class="fas fa-star"></i>
-                                    <% } else{ %>
-                                        <i class="far fa-star"></i>
+            <% if(noMatch !== null) { %>
+                <div class="col mt-4">
+                    <h5 class="text-center">No match found for <em><%= noMatch %></em>, try again!</h5>
+                </div>
+            <% } else { %>
+                <% camps.forEach(function(camp){ %>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <div class="card indexCards mb-4 shadow">
+                            <a href="/components/<%= camp["_id"] %>"><img class="bd-placeholder-img card-img-top" src="<%= camp["image"] %>" alt=""></a>
+                            <div class="card-body">
+                                <p class="mb-0"><a href="/components/<%= camp["_id"] %>"><%= camp.name %></a><span id="camp-price-icon" class="text-muted float-right"><%= camp.price <= 10 ? "$" : "$$" %></span></p>
+                                <span>
+                                    <% for(let i=0;i<5;i++) { %>
+                                        <% if(i < parseInt(camp.rateAvg)) { %>
+                                            <i class="fas fa-star"></i>
+                                        <% } else{ %>
+                                            <i class="far fa-star"></i>
+                                        <% } %>
                                     <% } %>
-                                <% } %>
-                            </span>
-                            <span class="text-muted"><%= camp.rateCount ? camp.rateCount : 0 %> <%= camp.comments.length === 1 ? "review" : "reviews" %></span>
+                                </span>
+                                <span class="text-muted"><%= camp.rateCount ? camp.rateCount : 0 %> <%= camp.comments.length === 1 ? "review" : "reviews" %></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <% }); %>
+                <% }); %>
+            <% } %>
         </div>
     </div>
 

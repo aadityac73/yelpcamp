@@ -7,7 +7,7 @@ const express = require('express'),
 	middleware = require('../middleware'),
 	upload = require('../config/multer'),
 	cloudinary = require('../config/cloudinary');
-
+	Fuse = require('fuse.js');
 const moment = require('moment');
 const months = [
 	'',
@@ -29,14 +29,84 @@ router.use(methodOverride('_method'));
 
 router.get('/', async (req, res) => {
 	try {
-		const campgrounds = await YelpCamp.find({});
-		if (!campgrounds) {
-			req.flash('error', 'No campgrouds found!');
-			return res.redirect('back');
+		let noMatch = null;
+		if(req.query.search) {
+			const campgrounds = await YelpCamp.find({});
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			const options = {
+				shouldSort: true,
+				threshold: 0.5,
+				location: 0,
+				distance: 100,
+				maxPatternLength: 32,
+				minMatchCharLength: 2,
+				keys: ["name", "location"]
+			}
+			const fuse = new Fuse(campgrounds, options);
+			const result = fuse.search(req.query.search)
+			const camps = result.map(camp => camp.item);
+			if(result.length < 1){
+				noMatch = req.query.search;
+			}
+			res.render('campgrounds/components', { camps: camps, noMatch: noMatch });
+		} 
+		else if (req.query.sortby === "rateAvg") {
+			const campgrounds = await YelpCamp.find({}).sort({
+				rateCount: -1,
+				rateAvg: -1
+			}).exec();
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			res.render('campgrounds/components', { camps: campgrounds, noMatch: noMatch });
 		}
-		res.render('campgrounds/components', { camps: campgrounds });
+		else if (req.query.sortby === "rateCount") {
+			const campgrounds = await YelpCamp.find({}).sort({
+				rateCount: -1
+			}).exec();
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			res.render('campgrounds/components', { camps: campgrounds, noMatch: noMatch });
+		}
+		else if (req.query.sortby === "priceLow") {
+			const campgrounds = await YelpCamp.find({}).sort({
+				price: 1,
+				rateAvg: -1
+			}).exec();
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			res.render('campgrounds/components', { camps: campgrounds, noMatch: noMatch });
+		}
+		else if (req.query.sortby === "priceHigh") {
+			const campgrounds = await YelpCamp.find({}).sort({
+				price: -1,
+				rateAvg: -1
+			}).exec();
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			res.render('campgrounds/components', { camps: campgrounds, noMatch: noMatch });
+		}
+		else {
+			const campgrounds = await YelpCamp.find({});
+			if (campgrounds.length < 1) {
+				req.flash('error', 'No campgrouds found!');
+				return res.redirect('back');
+			}
+			res.render('campgrounds/components', { camps: campgrounds, noMatch: noMatch });
+		}
 	} catch (err) {
-		next(err);
+		req.flash("error", "Something went wrong!")
+		res.redirect('back');
 	}
 });
 
