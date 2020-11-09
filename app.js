@@ -15,7 +15,7 @@ var campgroundRoutes = require('./routes/campgrounds'),
 	commentsRoutes = require('./routes/comments'),
 	indexRoutes = require('./routes/index');
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const URI = process.env.DATABASEURL;
 mongoose.connect(URI, {
 	useNewUrlParser: true,
